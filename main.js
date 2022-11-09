@@ -1,97 +1,76 @@
-// GET REQUEST
-function getTodos() {
-  console.log('GET Request');
+// USER FORM SCRIPT
+const myForm = document.getElementById("my-form");
+const nameInput = document.getElementById("name").value;
+const emailInput = document.getElementById("email").value;
+const showData = document.getElementById("showData");
+const getReq = document.getElementById("get");
+//console.log(nameInput, emailInput);
+
+// Listen for form submit
+myForm.addEventListener("submit", onSubmit);
+getReq.addEventListener("click", getData);
+
+function onSubmit(e) {
+  e.preventDefault();
+  console.log("SUBMIT");
+  updateData();
+  //getData();
+  //console.log(document.getElementById("email").value);
 }
 
-// POST REQUEST
-function addTodo() {
-  console.log('POST Request');
+//PUT REQUEST
+function updateData() {
+  axios
+    .post(
+      "https://crudcrud.com/api/96c31792e5cc462b811df87e5012af4f/appointmentData",
+      {
+        Name: document.getElementById("name").value,
+        Email: document.getElementById("email").value,
+      }
+    )
+    .then((res) => console.log(res))
+    .catch((err) => console.log(err));
 }
 
-// PUT/PATCH REQUEST
-function updateTodo() {
-  console.log('PUT/PATCH Request');
+function getData(e) {
+  e.preventDefault();
+  axios
+    .get(
+      "https://crudcrud.com/api/96c31792e5cc462b811df87e5012af4f/appointmentData?_limit=5"
+    )
+    .then((res) => showOutput(res))
+    .catch((err) => console.log(err));
 }
 
-// DELETE REQUEST
-function removeTodo() {
-  console.log('DELETE Request');
-}
-
-// SIMULTANEOUS DATA
-function getData() {
-  console.log('Simultaneous Request');
-}
-
-// CUSTOM HEADERS
-function customHeaders() {
-  console.log('Custom Headers');
-}
-
-// TRANSFORMING REQUESTS & RESPONSES
-function transformResponse() {
-  console.log('Transform Response');
-}
-
-// ERROR HANDLING
-function errorHandling() {
-  console.log('Error Handling');
-}
-
-// CANCEL TOKEN
-function cancelToken() {
-  console.log('Cancel Token');
-}
-
-// INTERCEPTING REQUESTS & RESPONSES
-
-// AXIOS INSTANCES
-
-// Show output in browser
 function showOutput(res) {
-  document.getElementById('res').innerHTML = `
-  <div class="card card-body mb-4">
-    <h5>Status: ${res.status}</h5>
-  </div>
-
-  <div class="card mt-3">
-    <div class="card-header">
-      Headers
-    </div>
-    <div class="card-body">
-      <pre>${JSON.stringify(res.headers, null, 2)}</pre>
-    </div>
-  </div>
-
-  <div class="card mt-3">
-    <div class="card-header">
-      Data
-    </div>
-    <div class="card-body">
-      <pre>${JSON.stringify(res.data, null, 2)}</pre>
-    </div>
-  </div>
-
-  <div class="card mt-3">
-    <div class="card-header">
-      Config
-    </div>
-    <div class="card-body">
-      <pre>${JSON.stringify(res.config, null, 2)}</pre>
-    </div>
-  </div>
-`;
+  // document.getElementById("showData").innerHTML = `\
+  // <div>
+  // <h5>${JSON.stringify(res.data, null, 2)}</h5>
+  // </div>
+  // `;
+  // const myData = JSON.stringify(res.data, null);
+  // console.log(myData);
+  let output = "";
+  console.log(res);
+  for (let i = 0; i < res.data.length; i++) {
+    output +=
+      "<li>" +
+      res.data[i].Name +
+      "&nbsp" +
+      "&nbsp" +
+      res.data[i].Email +
+      `<button onClick=${editFeature}>EDIT</button>` +
+      `<button onClick=${deleteFeature}>DELETE</button>` +
+      "</li>";
+  }
+  document.getElementById("showData").innerHTML = output;
+  //console.log(myData);
+  //extracting data from table header
 }
 
-// Event listeners
-document.getElementById('get').addEventListener('click', getTodos);
-document.getElementById('post').addEventListener('click', addTodo);
-document.getElementById('update').addEventListener('click', updateTodo);
-document.getElementById('delete').addEventListener('click', removeTodo);
-document.getElementById('sim').addEventListener('click', getData);
-document.getElementById('headers').addEventListener('click', customHeaders);
-document
-  .getElementById('transform')
-  .addEventListener('click', transformResponse);
-document.getElementById('error').addEventListener('click', errorHandling);
-document.getElementById('cancel').addEventListener('click', cancelToken);
+function editFeature() {}
+function deleteFeature() {
+  axios.delete(
+    "https://crudcrud.com/api/96c31792e5cc462b811df87e5012af4f/appointmentData"
+  );
+}
